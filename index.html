@@ -2,118 +2,100 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>AI Coach: ลานประลอง Soft Skills</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soft Skills Lab: ลานประลอง Soft Skills</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1e1e1e; color: #333; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        #chat-container { width: 100%; max-width: 650px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; }
-        .header { background: #d32f2f; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2em; }
-        #chat-box { height: 450px; padding: 20px; overflow-y: auto; background: #f5f5f5; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 12px 18px; border-radius: 15px; max-width: 85%; line-height: 1.5; font-size: 0.95em; }
-        .msg.user { background: #e3f2fd; align-self: flex-end; border-bottom-right-radius: 0; border: 1px solid #bbdefb; }
-        .msg.bot { background: white; align-self: flex-start; border-bottom-left-radius: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 4px solid #d32f2f; }
-
-        /* สไตล์สำหรับกล่องคะแนน */
-        .assessment-badge { display: inline-block; background: #ffebee; color: #c62828; padding: 5px 10px; border-radius: 8px; font-weight: bold; font-size: 0.85em; margin-bottom: 8px; border: 1px solid #ffcdd2; }
-        .weakness-tag { background: #fff3e0; color: #ef6c00; padding: 3px 8px; border-radius: 5px; font-size: 0.8em; margin-left: 5px; border: 1px solid #ffe0b2; }
-
-        .msg.system { background: #ffcccc; align-self: center; font-size: 0.8em; color: #cc0000; border-radius: 5px; }
-        #input-area { display: flex; padding: 15px; background: #fff; border-top: 1px solid #ddd; }
-        #message-input { flex: 1; padding: 12px 15px; border: 1px solid #ccc; border-radius: 25px; outline: none; font-size: 1em; transition: 0.3s; }
-        #message-input:focus { border-color: #d32f2f; box-shadow: 0 0 5px rgba(211,47,47,0.3); }
-        #send-btn { background: #d32f2f; color: white; border: none; padding: 10px 25px; margin-left: 10px; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 1em; transition: 0.3s; }
-        #send-btn:hover { background: #b71c1c; }
-        #send-btn:disabled { background: #ccc; cursor: not-allowed; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #333; margin: 0; padding: 20px; }
+        .chat-container { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); padding: 25px; }
+        .header { text-align: center; color: #1976d2; margin-bottom: 20px; border-bottom: 2px solid #e3f2fd; padding-bottom: 15px; }
+        .chat-box { height: 450px; overflow-y: auto; border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; background: #fafafa; }
+        .message { margin-bottom: 20px; padding: 15px; border-radius: 8px; line-height: 1.6; }
+        .user-msg { background: #e3f2fd; border-right: 4px solid #1976d2; text-align: right; margin-left: 15%; }
+        .ai-msg { background: #fff; border: 1px solid #e0e0e0; border-left: 4px solid #4CAF50; margin-right: 15%; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .score-badge { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 5px 12px; border-radius: 15px; font-weight: bold; font-size: 0.9em; margin-bottom: 10px; border: 1px solid #c8e6c9;}
+        .weakness-badge { display: inline-block; background: #fff3e0; color: #ef6c00; padding: 5px 12px; border-radius: 15px; font-size: 0.9em; margin-left: 5px; margin-bottom: 10px; border: 1px solid #ffe0b2;}
+        .input-group { display: flex; flex-direction: column; gap: 12px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+        select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; box-sizing: border-box; font-family: inherit;}
+        button { background: #1976d2; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; align-self: flex-end; transition: 0.2s;}
+        button:hover { background: #115293; }
+        .ai-reply-text { white-space: pre-wrap; margin-top: 8px; font-size: 0.95em; }
     </style>
 </head>
 <body>
 
-<div id="chat-container">
-    <div class="header">🔥 ลานประลอง Soft Skills (โหมดจำลองสถานการณ์)</div>
-    <div id="chat-box">
-        <div class="msg bot">
-            ยินดีต้อนรับสู่ลานประลอง คุณมีเวลาไม่มาก พิสูจน์ตัวเองมาว่าคุณพร้อมสำหรับโลกการทำงานแค่ไหน พิมพ์สถานการณ์ที่คุณอยากฝึก (เช่น "อยากฝึกสัมภาษณ์งาน" หรือ "อยากฝึกนำเสนอโปรเจกต์")
+<div class="chat-container">
+    <h2 class="header">💡 AI Coach: ประเมิน Soft Skills & SOP</h2>
+
+    <div class="chat-box" id="chat-box">
+        <div class="message ai-msg">
+            สวัสดีครับ ผมคือที่ปรึกษาด้านการสื่อสารของคุณ กรุณาเลือกสถานการณ์จำลองด้านล่าง แล้วพิมพ์บทความ, SOP หรือข้อความที่คุณต้องการให้ผมช่วยวิเคราะห์ได้เลยครับ
         </div>
     </div>
-    <div id="input-area">
-        <input type="text" id="message-input" placeholder="พิมพ์ข้อความตอบกลับที่นี่..." onkeypress="handleEnter(event)">
-        <button id="send-btn" onclick="sendMessage()">ส่ง</button>
+
+    <div class="input-group">
+        <label for="scenario-select" style="font-weight: 600; color: #555;">🎯 เลือกสถานการณ์ที่คุณต้องการประเมิน:</label>
+        <select id="scenario-select">
+            <option value="นำเสนอ SOP เพื่อขอทุนเรียนต่อ">🎓 นำเสนอ SOP เพื่อขอทุนเรียนต่อ</option>
+            <option value="จำลองการสัมภาษณ์งาน">💼 จำลองการสัมภาษณ์งาน</option>
+            <option value="พรีเซนต์โปรเจกต์นวัตกรรม">🚀 พรีเซนต์โปรเจกต์นวัตกรรม</option>
+            <option value="การเขียนอีเมลติดต่อธุรกิจ">✉️ การเขียนอีเมลติดต่อธุรกิจ</option>
+        </select>
+        <textarea id="chat-input" rows="4" placeholder="พิมพ์ข้อความของคุณที่นี่..."></textarea>
+        <button onclick="sendMessage()" id="send-btn">ส่งข้อความให้ที่ปรึกษาประเมิน</button>
     </div>
 </div>
 
 <script>
-    let currentSessionId = "";
-
-    function handleEnter(e) {
-        if (e.key === 'Enter') sendMessage();
-    }
+    const currentSessionId = "session_" + Math.random().toString(36).substring(7);
 
     async function sendMessage() {
-        const inputField = document.getElementById("message-input");
-        const sendBtn = document.getElementById("send-btn");
+        const inputField = document.getElementById("chat-input");
         const message = inputField.value.trim();
+        const scenario = document.getElementById("scenario-select").value;
+        const chatBox = document.getElementById("chat-box");
+        const sendBtn = document.getElementById("send-btn");
+
         if (!message) return;
 
-        // 1. แสดงข้อความผู้ใช้
-        addRawMessage(message, "user");
+        chatBox.innerHTML += `<div class="message user-msg">${message}</div>`;
         inputField.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
 
-        inputField.disabled = true;
         sendBtn.disabled = true;
-        sendBtn.innerText = "กำลังวิเคราะห์...";
+        sendBtn.innerText = "กำลังวิเคราะห์โครงสร้าง...";
 
         try {
-            // 2. ยิง API หาหลังบ้าน
-            const response = await fetch("http://127.0.0.1:8000/chat", {
+            // ยิงข้อมูลไปที่ Render ของคุณ พร้อมแนบ scenario ไปด้วย
+            const response = await fetch("https://soft-skills-ai-backend-1.onrender.com/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     session_id: currentSessionId,
-                    message: message
+                    message: message,
+                    scenario: scenario
                 })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || "เซิร์ฟเวอร์ขัดข้อง");
-            }
-
+            if (!response.ok) throw new Error("API Error");
             const data = await response.json();
-            currentSessionId = data.session_id;
 
-            // 3. แยกกล่องข้อมูล JSON เอามาปั้นเป็น UI สวยๆ
-            const aiReply = data.assessment.reply;
-            const aiScore = data.assessment.score;
-            const aiWeakness = data.assessment.weakness;
-
-            // สร้าง HTML สำหรับแสดงคะแนนและจุดอ่อน
-            const formattedHTML = `
-                <div class="assessment-badge">คะแนน: ${aiScore}/10</div>
-                <span class="weakness-tag">จุดบอด: ${aiWeakness}</span>
-                <br><br>
-                ${aiReply.replace(/\n/g, '<br>')}
-            `;
-
-            addRawMessage(formattedHTML, "bot");
-
+            chatBox.innerHTML += `
+                <div class="message ai-msg">
+                    <div>
+                        <span class="score-badge">คะแนนประเมิน: ${data.score}</span>
+                        <span class="weakness-badge">จุดที่ควรโฟกัส: ${data.weakness}</span>
+                    </div>
+                    <div class="ai-reply-text">${data.reply}</div>
+                </div>`;
         } catch (error) {
-            addRawMessage(`Error: ${error.message}`, "system");
+            console.error("Error:", error);
+            chatBox.innerHTML += `<div class="message ai-msg" style="border-left-color: red;">❌ เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้</div>`;
         } finally {
-            inputField.disabled = false;
             sendBtn.disabled = false;
-            sendBtn.innerText = "ส่ง";
-            inputField.focus();
+            sendBtn.innerText = "ส่งข้อความให้ที่ปรึกษาประเมิน";
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     }
-
-    function addRawMessage(htmlContent, sender) {
-        const chatBox = document.getElementById("chat-box");
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `msg ${sender}`;
-        msgDiv.innerHTML = htmlContent;
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
 </script>
-
 </body>
 </html>
