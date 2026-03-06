@@ -36,7 +36,7 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chat")
-async def chat_endpoint(req: ChatRequest):
+def chat_endpoint(req: ChatRequest):
     # Prompt แบบ Professional ที่คุณต้องการ
     system_instruction = f"""
     คุณคือ "ที่ปรึกษาด้านการสื่อสารและ Soft Skills มืออาชีพ" 
